@@ -1,12 +1,13 @@
 import React from 'react'
 import { useUser } from '../../Contexts/user.jsx';
 import { useSocket } from '../../Contexts/socket.jsx';
-import { useEffect } from 'react';
+import {Link} from "react-router-dom"
 import { useMobile } from "../../Contexts/mobile.jsx"
 
 function Header() {
     const {socket} = useSocket();
     const {userState, token} = useUser();
+    const {widthS} = useMobile();
 
     const logout = () => {
         socket.emit('disconnected', userState.user)
@@ -19,74 +20,10 @@ function Header() {
         window.location.pathname='/'
     }
 
-    useEffect(() => {
-        if(screen.width < 600){
-            window.addEventListener('scroll', (e) => {
-                document.getElementById('header-pos').style.bottom = 0;
-            })
-        }
-    }, [])
-    return <HeaderContent userState={userState} token={token} logout={logout} />
-}
+    if(widthS === 'mobile') return <MobileHeader userState={userState} token={token} logout={logout} />
+    else if(widthS.includes('medium')) return <MediumHeader userState={userState} token={token} logout={logout} />
+    else return <LargeHeader userState={userState} token={token} logout={logout} />
 
-const HeaderContent = ({userState, token, logout}) => {
-    const {isMobile} = useMobile();
-    return(
-        <div id='header-pos' className={``}>
-            <div id="header">
-                { !isMobile ?
-                    <div id="title">
-                        <a className={`notranslate a-normalize `} href="/">Luccagram</a>
-                    </div>:''
-                }
-                {token ?
-                <div id="header-nav">
-                    <div id="nav-lspace"></div>
-                    <div id="nav-btns">
-                        <a href='/' id="Home-btn" className={`a-normalize header-btn `}>
-                        <span className={`material-icons notranslate gicon header-icon `}>
-                            home
-                        </span>
-                            Inicio
-                        </a>
-                        <a href={userState ? `/user/${userState?.user}`: ''} id="Profile-btn" className={`a-normalize header-btn `}>
-                            <span className={`material-icons notranslate gicon header-icon `}>
-                                person
-                            </span>
-                            Perfil
-                        </a>
-                        <a href='/notifications' id="notification-btn" className={`a-normalize header-btn `}>
-                            <span className={`material-icons notranslate gicon header-icon `}>
-                                    notifications
-                            </span>
-                            <div id="new-notification-div">
-                                {userState?.newNotis > 0 ? <span id="new-notification">{userState?.newNotis}</span>:''}
-                            </div>
-                            Notificaciones
-                        </a>
-                        <a  id="theme-btn" className={`a-normalize header-btn `}>
-                        <span className={`material-icons notranslate gicon header-icon `}>brush</span>
-                            Tema
-                        </a>
-                        <a onClick={logout} id="logout-btn" className={`a-normalize header-btn `}>
-                        <span className={`material-icons notranslate gicon header-icon `}>logout</span>
-                            Cerrar Sesión
-                        </a>
-                    </div>
-                </div>:''}
-
-                </div>
-                
-                {token && !isMobile ? <div id="account">
-                    <div id="account-btn">
-                    <img id="account-pic" src={userState ? userState?.profilePic : ''} alt={userState?.user} />
-                    <div className='notranslate' id="account-user">
-                        {userState?.user}
-                    </div>
-                    </div>
-                </div>:''}
-        </div>
-    )
 }
 
 const LargeHeader = ({userState, theme, token, logout}) => {
@@ -95,37 +32,35 @@ const LargeHeader = ({userState, theme, token, logout}) => {
         <div id='header-pos' className={``}>
             <div id="header">
                 <div id="title">
-                    <a className={`notranslate a-normalize `} href="/">Luccagram</a>
+                    <Link className={`notranslate a-normalize `} to="/">Luccagram</Link>
                 </div>
                 {token ?
                 <div id="header-nav">
                     <div id="nav-lspace"></div>
                     <div id="nav-btns">
-                        <a href='/' id="Home-btn" className={`a-normalize header-btn `}>
+                        <Link to='/' id="Home-btn" className={`a-normalize header-btn `}>
                         <span className={`material-icons notranslate gicon header-icon `}>
                             home
                         </span>
                             Inicio
-                        </a>
-                        <a href={userState ? `/user/${userState?.user}`: ''} id="Profile-btn" className={`a-normalize header-btn `}>
+                        </Link>
+                        <Link to={userState ? `/user/${userState?.user}`: ''} id="Profile-btn" className={`a-normalize header-btn `}>
                             <span className={`material-icons notranslate gicon header-icon `}>
                                 person
                             </span>
                             Perfil
-                        </a>
-                        <a href='/notifications' id="notification-btn" className={`a-normalize header-btn `}>
-                            <span className={`material-icons notranslate gicon header-icon `}>
-                                    notifications
-                            </span>
+                        </Link>
+                        <Link to='/chat' id="chat-btn" className={`a-normalize header-btn `}>
+                            <span className="material-icons notranslate gicon header-icon">mail</span>
+                            Chats
+                        </Link>
+                        <Link to='/notifications' id="notification-btn" className={`a-normalize header-btn `}>
+                            <span className={`material-icons notranslate gicon header-icon `}>notifications</span>
                             <div id="new-notification-div">
                                 {userState?.newNotis > 0 ? <span id="new-notification">{userState?.newNotis}</span>:''}
                             </div>
                             Notificaciones
-                        </a>
-                        <a id="theme-btn" className={`a-normalize header-btn `}>
-                        <span className={`material-icons notranslate gicon header-icon `}>brush</span>
-                            Tema
-                        </a>
+                        </Link>
                         <a onClick={logout} id="logout-btn" className={`a-normalize header-btn `}>
                         <span className={`material-icons notranslate gicon header-icon `}>logout</span>
                             Cerrar Sesión
@@ -151,35 +86,42 @@ const LargeHeader = ({userState, theme, token, logout}) => {
 
 const MediumHeader = ({userState, theme, token, logout}) => {
     return (
-        <div id='header-pos' className={``}>
+        <div id='medium-header-pos' className={``}>
             <div id="header">
                 <div id="title">
-                    <a className={`notranslate a-normalize `} href="/">L</a>
+                    <Link className={`notranslate a-normalize `} to="/">L</Link>
                 </div>
                 {token ?
                 <div id="header-nav">
-                    <div id="nav-lspace"></div>
-                    <div id="nav-btns">
-                        <a href='/' id="Home-btn" className={`a-normalize header-btn `}>
-                        <span className={`material-icons notranslate gicon header-icon `}>
+                    <div id="medium-nav-btns">
+                        <Link to='/' id="Home-btn" className={`a-normalize medium-header-btn `}>
+                        <span className={`material-icons notranslate gicon medium-header-icon `}>
                             home
                         </span>
-                        </a>
-                        <a href={userState ? `/user/${userState?.user}`: ''} id="Profile-btn" className={`a-normalize header-btn `}>
-                            <span className={`material-icons notranslate gicon header-icon `}>
+                        </Link>
+                        <Link to={userState ? `/user/${userState?.user}`: ''} id="Profile-btn" className={`a-normalize medium-header-btn `}>
+                            <span className={`material-icons notranslate gicon medium-header-icon `}>
                                 person
                             </span>
-                        </a>
-                        <a href='/notifications' id="notification-btn" className={`a-normalize header-btn `}>
-                            <span className={`material-icons notranslate gicon header-icon `}>
+                        </Link>
+                        <Link to='/search' id="search-btn" className={`a-normalize medium-header-btn `}>
+                            <span className={`material-icons notranslate gicon medium-header-icon `}>
+                                search
+                            </span>
+                        </Link>
+                        <Link to='/chat' id="chat-btn" className={`a-normalize medium-header-btn `}>
+                            <span className="material-icons notranslate gicon medium-header-icon">mail</span>
+                        </Link>
+                        <Link to='/notifications' id="notification-btn" className={`a-normalize medium-header-btn `}>
+                            <span className={`material-icons notranslate gicon medium-header-icon `}>
                                     notifications
                                 </span>
                                 <div id="new-notification-div">
                                     {userState?.newNotis > 0 ? <span id="new-notification">{userState?.newNotis}</span>:''}
                                 </div>
-                        </a>
-                        <a onClick={logout} id="logout-btn" className={`a-normalize header-btn `}>
-                        <span className={`material-icons notranslate gicon header-icon `}>logout</span>
+                        </Link>
+                        <a  onClick={logout} id="logout-btn" className={`a-normalize medium-header-btn `}>
+                        <span className={`material-icons notranslate gicon medium-header-icon `}>logout</span>
                         </a>
                     </div>
                 </div>:''}
@@ -187,11 +129,9 @@ const MediumHeader = ({userState, theme, token, logout}) => {
                 </div>
                 
                 {token ? <div id="account">
-                    <div id="account-btn">
+                    <div id="medium-account-btn">
                     <img id="account-pic" src={userState ? userState?.profilePic : ''} alt={userState?.user} />
-                    <div className='notranslate' id="account-user">
-                        {userState?.user}
-                    </div>
+                    <div className='notranslate' id="account-user"></div>
                     </div>
                 </div>:''}
         </div>
@@ -204,32 +144,32 @@ const MobileHeader = ({userState, theme, token, logout}) => {
         return(
             <>
             <div id='mobile-header-pos'>
-                <a href='/' id="Home-btn" className={`a-normalize mobile-header-btn `}>
+                <Link to='/' id="Home-btn" className={`a-normalize mobile-header-btn `}>
                     <span className="material-icons notranslate gicon header-icon">
                         home
                     </span>
-                </a>
-                <a href='/search' id="search-btn" className={`a-normalize mobile-header-btn `}>
+                </Link>
+                <Link to='/search' id="search-btn" className={`a-normalize mobile-header-btn `}>
                     <span className="material-icons notranslate gicon header-icon">
                         search
                     </span>
-                </a>
-                <a href='/notifications' id="noti-btn" className={`a-normalize mobile-header-btn `}>
+                </Link>
+                <Link to='/notifications' id="noti-btn" className={`a-normalize mobile-header-btn `}>
                     <span className="material-icons notranslate gicon header-icon">
                         notifications
                     </span>
                     <div id="new-notification-div">
                         {userState?.newNotis > 0 ? <span id="new-notification">{userState?.newNotis}</span>:''}
                     </div>
-                </a>
-                <a href='/chat' id="chat-btn" className={`a-normalize mobile-header-btn `}>
+                </Link>
+                <Link to='/chat' id="chat-btn" className={`a-normalize mobile-header-btn `}>
                     <span className="material-icons notranslate gicon header-icon">
                         mail
                     </span>
-                </a>
-                <a href={'/user/'+userState?.user} id="chat-btn" className={`a-normalize header-btn `}>
-                    <img id="mobile-profile-btn" className={`a-normalize mobile-header-btn `} src={userState?.profilePic} />
-                </a>
+                </Link>
+                <Link to={'/user/'+userState?.user} id="profile-btn" className={`a-normalize mobile-header-btn `}>
+                    <img id="mobile-profile-btn-pic" className={`a-normalize mobile-header-btn `} src={userState?.profilePic} />
+                </Link>
             </div>
             </>
         )

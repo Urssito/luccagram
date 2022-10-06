@@ -47,6 +47,8 @@ router.post("/api/signup", async (req, res) => {
         if(emailUser || userUser){
             if(emailUser) errors.push("el email ya está en uso");
             if(userUser) errors.push("el nombre de usuario ya esta en uso");
+            if(userUser.length > 16) errors.push('su usuario no debe tener mas de 16 caracteres')
+            else if(description.length > 160) errors.push('su descripcion no debe tener mas de 160 caracteres')
             res.status(401).json({errors})
             err = true;
         }
@@ -149,8 +151,17 @@ router.put("/api/profile/editsuccess", isAuthenticated, upload.single("image"), 
             fs.unlinkSync(originalFile);
         }
     }else{
-        await userModel.findByIdAndUpdate(req.user, {user, description});
-        await publications.updateMany({userId: req.user},{user});
+        if(user.indexOf(' ') === -1){
+            if(user.length > 16) errors.push('su usuario no debe tener mas de 16 caracteres')
+            else if(description.length > 160) errors.push('su descripcion no debe tener mas de 160 caracteres')
+            else{
+                await userModel.findByIdAndUpdate(req.user, {user, description});
+                await publications.updateMany({userId: req.user},{user});
+            }
+        }
+        else{
+            errors.push('el usuario no debe contener espacios')
+        }
     }
 
     
@@ -271,15 +282,16 @@ router.get('/api/getChat',isAuthenticated, async(req, res) => {
     
     const chat = await chatModel.findOne({users: {$all: [userA, userB]}});
 
-    chat ? res.status(200).json(chat.chat) : res.status(404).json(null)
+    chat ? res.status(200).json(chat) : res.status(404).json(null)
 });
 
 router.post('/api/sendMsg', isAuthenticated, async(req, res) => {
-    const {users, msg} = req.body;
+    const {users, msg, see} = req.body;
     const chatdb = await chatModel.findOne({users: {$all:users}});
     let newChat = null
     if(chatdb){
         chatdb.chat.push(msg);
+        chatdb.see = see
         chatdb.save();
     }else{
         newChat = new chatModel({
@@ -291,10 +303,18 @@ router.post('/api/sendMsg', isAuthenticated, async(req, res) => {
     (newChat || chatdb) && res.status(200).json({})
 });
 
+router.put('/api/chatSee', isAuthenticated, async(req, res) => {
+    const {see, userA, userB} = req.body;
+
+    await chatModel.updateOne({users: {$all: [userA, userB]}},{see});
+    res.json({})
+})
+
 router.put('/api/sawNoti', isAuthenticated, async(req, res) => {
+    console.log('noti visto')
     const {user} = req.body;
     await notiModel.updateMany({receiver: {$all: [user]}}, {$push: {see: user}});
-    res.status(200);
+    res.status(200).json({});
 });
 
 router.post('/api/newNoti', isAuthenticated, async(req, res) => {

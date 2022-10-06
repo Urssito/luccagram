@@ -42,7 +42,9 @@ const hosts = [
     'https://44.210.211.88',
     'https://www.luccagram.online',
     'https://d3qoqxwfkyacye.cloudfront.net/',
-    'http://192.168.0.54:3000'
+    'http://192.168.0.54:3000',
+    'http://192.168.0.54:8080',
+    'http://25.56.26.90:3000'
 ];
 
 // Middlewares
@@ -122,6 +124,7 @@ const io = new Server(server,{
             'https://www.luccagram.online',
             'https://d3qoqxwfkyacye.cloudfront.net/',
             'http://192.168.0.54:3000',
+            'http://25.56.26.90:3000'
         ]
     },
     

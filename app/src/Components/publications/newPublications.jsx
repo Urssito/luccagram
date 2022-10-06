@@ -1,7 +1,6 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState } from "react";
 import { useSocket } from "../../Contexts/socket.jsx";
 import { useUser } from "../../Contexts/user.jsx";
-import { useTheme } from "../../Contexts/theme.jsx";
 import ErrorMsg from "../partials/error.jsx";
 import {getPubs} from "../../modules/getPubs.jsx";
 import Picker from "emoji-picker-react";
@@ -9,11 +8,9 @@ import { useMobile } from "../../Contexts/mobile.jsx";
 
 function NewPub({setPubs}) {
     const {isMobile} = useMobile();
-    const {theme} = useTheme();
     const {userState, token} = useUser();
     const {socket} = useSocket();
     const [errors, setErrors] = useState(null);
-    const [chosenEmoji, setChosenEmoji] = useState(null);
 
     const sendPub = async () => {
         const {publication} = document.forms[0];
@@ -63,6 +60,14 @@ function NewPub({setPubs}) {
         if(e.target.id === 'emoji-display' || e.target.id === 'aside')document.getElementById('emoji-display').classList.add('disabled')
     }
 
+    const limitText = () => {
+        const text = document.getElementById('textareaNewPub');
+        const limit = 1000
+        if(text.value.length > limit){
+            setErrors(['tu publicación es demasiado larga'])
+            text.value = text.value.slice(0,limit)
+        }
+    }
     if(token){
         return(
             <div id="new-pub">
@@ -73,7 +78,7 @@ function NewPub({setPubs}) {
                             <img className="profilePhoto" src={userState ? userState.profilePic : ''} alt="urssito"></img>
                         </div>
                         <div id="textarea-new-pub">
-                            <textarea placeholder="¿Qué estás pensando?" name="publication" id="textareaNewPub"></textarea>
+                            <textarea onChange={limitText} placeholder="¿Qué estás pensando?" name="publication" id="textareaNewPub"></textarea>
                         </div>
                     </div>
                     <div id="nav-new-pub-div">

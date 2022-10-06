@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 export const SocketContext = React.createContext()
 
 export function SocketProvider(props) {
-    const [socket, setSocket] = useState(process.env.NODE_ENV !== 'production' ? io('http://192.168.0.54:8081') : io());
+    const [socket, setSocket] = useState(process.env.NODE_ENV !== 'production' ? io('http://25.56.26.90:8081') : io());
 
     const value = useMemo(() => {
         return({

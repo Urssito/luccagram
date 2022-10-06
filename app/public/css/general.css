@@ -67,7 +67,7 @@
 .top-bar{
     display: flex;
     position: fixed;
-    z-index: 0;
+    z-index: 2;
     flex-direction: row;
     width: 100%;
     max-width: 626px;
@@ -78,22 +78,7 @@
     font-weight: bold;
     font-size: 18px;
     border-bottom: 1px solid #888;
-}
-
-.top-bar{
-    display: flex;
-    position: fixed;
-    z-index: 0;
-    flex-direction: row;
-    width: 100%;
-    max-width: 626px;
-    height: 57px;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 10px;
-    font-weight: bold;
-    font-size: 18px;
-    border-bottom: 1px solid #888;
+    background-color: #fff;
 }
 
 .top-bar-space{
@@ -121,18 +106,25 @@
 #center{
     height: 100%;
     width: 100%;
-    background-color: transparent;
+    background-color: #fff !important;
 }
 
 #center .top-bar{
-    border-left: 1px solid #888;
 }
 
 #center .mobile-top-bar{
-    border-left: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    position: fixed;
+    padding: 10px 0;
     width: 100%;
     max-width: none;
     border-bottom: 1px solid #888;
+    font-weight: bolder;
+    background-color: #fff;
+    z-index: 2;
 }
 
 #mobile-content{

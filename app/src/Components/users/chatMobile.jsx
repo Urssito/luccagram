@@ -2,10 +2,14 @@ import React, {useState} from "react";
 import { useEffect } from "react";
 import { useUser } from "../../Contexts/user.jsx";
 import Chat from "./chat.jsx";
-import Header from "../main/Header.jsx"
 import {useTheme} from "../../Contexts/theme.jsx";
+import Schema from "../main/schema.jsx";
 
-const ChatMobile = () => {
+const ChatPage = () => {
+    return <Schema Content={ChatPageContent} />
+}
+
+const ChatPageContent = () => {
     const {theme} = useTheme();
     const {userState, token} = useUser();
     const [chats, setChats] = useState(null);
@@ -25,27 +29,21 @@ const ChatMobile = () => {
     }, [userState]);
 
     return(
-        <div id="app-body">
-            <div id="center">
-                <div className={`top-bar ${theme === 'light' ? 'bg-light' : 'bg-dark'}`}>
-                    <div className="back-btn-div">
-                        <span className="back-btn material-icons notranslate">arrow_back</span>
-                    </div>
-                    <div className="top-bar-title">Chats</div>
+        <>
+            <div className={`top-bar ${theme === 'light' ? 'bg-light' : 'bg-dark'}`}>
+                <div className="back-btn-div" onClick={()=>{window.history.back()}} >
+                    <span className="back-btn material-icons notranslate">arrow_back</span>
                 </div>
-                <div className="top-bar-space" />
-                <div id="chats">
-                    {chats ? chats.map((chat, i) => (
-                        <Chat key={'chat-'+i} chatid={chat} />
-                    )):''}
-                </div>
-                <div id="bottom-bar-space" />
+                <div className="top-bar-title">Chats</div>
             </div>
-            <header>
-                <Header />
-            </header>
-        </div>
+            <div className="top-bar-space" />
+            <div id="chats">
+                {chats ? chats.map((chat, i) => (
+                    <Chat key={'chat-'+i} chatid={chat} />
+                )):''}
+            </div>
+        </>
     )
 }
 
-export default ChatMobile
+export default ChatPage

@@ -126,6 +126,7 @@ circle{
 .publication-body{
     padding: 0 0 15px 0;
     margin: 0;
+    word-wrap: break-word;
 }
 
 #interactions{
@@ -154,7 +155,7 @@ label {
     flex-direction: row;
 }
 
-.heart-icon-light:hover{
+.heart-icon:hover{
     transform: scale(1.1);
     cursor: pointer;
 }

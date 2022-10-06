@@ -2,8 +2,13 @@ import React, {useState, useEffect} from "react";
 import Header from "./Header.jsx"
 import { useTheme } from "../../Contexts/theme.jsx";
 import { useMobile } from "../../Contexts/mobile.jsx";
+import Schema from "./schema.jsx";
 
 const SearchMobile = () => {
+    return <Schema Content={SearchMobileContent} />
+}
+
+const SearchMobileContent = () => {
     const {theme} = useTheme();
     const {isMobile} = useMobile();
     const [timeOutID, setTimeOutID] = useState();
@@ -29,7 +34,7 @@ const SearchMobile = () => {
         .then((res) => (res.json()))
         .then(results => {
             const input = document.getElementById('search-input');
-            const resultsDiv = document.getElementById('results');
+            const resultsDiv = document.getElementById('mobile-results');
             if(results){
                 resultsDiv.innerHTML ='';
                 results.map((resultRaw) => {
@@ -49,28 +54,22 @@ const SearchMobile = () => {
     }
 
     return(
-        <div id="app-body">
-            <div id="center">
-                <div className='top-bar'>
-                    <div className="back-btn-div">
-                        <span className="back-btn material-icons notranslate">arrow_back</span>
-                    </div>
-                    <div className="top-bar-title">Búsquedas</div>
+        <>
+            <div className={isMobile ? 'mobile-top-bar' : 'top-bar'}>
+                <div className="back-btn-div">
+                    <span className="back-btn material-icons notranslate">arrow_back</span>
                 </div>
-                <div className="top-bar-space"></div>
-                <div id={!isMobile ? "search-div": "mobile-search-div"}>
-                    <div id={!isMobile ? "search-input-div" : "mobile-search-input-div"}>
-                        <span className='material-icons notranslate'>search</span>
-                        <input onKeyUp={sendData} id="search-input" type="text" placeholder="Buscar"/>
-                    </div>
-                    <div id="results"></div>
-                </div>
-                <div id="bottom-bar-space" />
+                <div className="top-bar-title">Búsquedas</div>
             </div>
-            {isMobile ? <header id="mobile-header">
-                <Header />
-            </header>: ''}
-        </div>
+            <div className="top-bar-space"></div>
+            <div id="mobile-search-div">
+                <div id="mobile-search-input-div">
+                    <span className='material-icons notranslate'>search</span>
+                    <input onKeyUp={sendData} id="search-input" type="text" placeholder="Buscar"/>
+                </div>
+                <div id="mobile-results"></div>
+            </div>
+        </>
     )
 }
 

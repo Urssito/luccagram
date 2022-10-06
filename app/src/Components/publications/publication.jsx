@@ -132,7 +132,7 @@ function Like({i, user, pubID, likesArray, token, usersPub}) {
             />
             <label htmlFor={'likeBtn'+i}>
                 <i
-                className={`material-icons notranslate disable-select`}
+                className={`material-icons notranslate disable-select heart-icon`}
                 style={
                     liked
                     ? {color: '#f00'}

@@ -6,9 +6,16 @@ import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import ErrorMsg from '../partials/error.jsx';
 import {useTheme} from "../../Contexts/theme.jsx";
+import Schema from '../main/schema.jsx';
+import {useMobile} from '../../Contexts/mobile.jsx'
 
 function EditProfile() {
+    return <Schema Content={EditProfileContent} />
+}
+
+function EditProfileContent() {
     const {theme} = useTheme();
+    const {isMobile} = useMobile();
     const {userState, token} = useUser();
     const [dim, setDim] = useState([]);
     const [cropper, setCropper] = useState();
@@ -65,7 +72,7 @@ function EditProfile() {
         if(save){
             formData.append('imgDim', dim);
         }else{
-            document.getElementById('file').remove();
+            document.getElementById('file')?.remove();
         }
 
         const saveLogo = document.querySelector('.loading-btn');
@@ -83,7 +90,13 @@ function EditProfile() {
             }
         });
         const data = await res.json();
-        if(data.errors) setErrors([...data.errors]);
+        if(data.errors) {
+            setErrors([...data.errors]);
+            saveLogo.removeAttribute('id');
+            saveLogo.innerHTML = 'save';
+            saveLogo.style['border-top'] = 'none';
+            saveLogo.style.width = '24px';
+        }
         else {
             const oldUser = await JSON.parse(JSON.stringify(userState));
             oldUser.user = data.user;
@@ -108,103 +121,93 @@ function EditProfile() {
         setSave(false);
     }
 
+    useEffect(() => {
+
+    })
+
     return(
-        <div id="app-body">
-            {errors.length > 0 ? <ErrorMsg errors={errors} /> : ''}
-            <React.StrictMode>
-                <header>
-                    <Header />
-                </header>
-                <div id="content">
-                    <div id="content-pos">
-                        <div id="center">
-                        <div className={`top-bar ${theme === 'light' ? 'bg-light' : 'bg-dark'}`}>
-                            <span className="back-btn material-icons notranslate" onClick={()=>{window.history.back()}}>
-                                arrow_back
-                            </span>
-                            Editar perfil
-                        </div>
-                        <div className='top-bar-space' />
-                        <div className={`edit-profile-div ${theme === 'light' ? 'bg-light' : 'bg-dark'}`}>
+        <>
+            {errors.length ? <ErrorMsg errors={errors} />: ''}
+            <div className={isMobile ? 'mobile-top-bar' : 'top-bar'}>
+                <span className="back-btn material-icons notranslate" onClick={()=>{window.history.back()}}>
+                    arrow_back
+                </span>
+                Editar perfil
+            </div>
+            <div className='top-bar-space' />
+            <div className={`edit-profile-div `}>
 
-                            <form id="formFile">
+                <form id="formFile">
 
-                                <div className="form-group edit-profile-group">
-                                    <span className="edit-profile-element">Cambiar nombre de usuario</span>
-                                    <input type="text" name="user" placeholder="usuario" defaultValue={userState.user} />
+                    <div className="form-group edit-profile-group">
+                        <span className="edit-profile-element">Cambiar nombre de usuario</span>
+                        <input type="text" name="user" placeholder="usuario" defaultValue={userState?.user} />
+                    </div>
+
+                    <div className="form-group edit-profile-group">
+                        <div className="edit-profile-file-form">
+                            {/*<!-- cut image scripts -->*/}
+
+                            <link href="/css/cropper.css" type='text/css' rel="stylesheet" />
+                            <script src="/javascript/cropper.js" />
+                            {/*<!-- input -->*/}
+                            <span className="edit-profile-element" id="edit-profile-title-porfilePic">Cambiar foto de Perfil</span>
+                            <div className="preview-div">
+                                {/*<!-- Preview -->*/}
+                                <div id="editor" className='disabled' onClick={getData}>
+                                    <Cropper
+                                        src={image}
+                                        style={{ height: '100%', maxWidth: '100%' }}
+                                        // Cropper.js options
+                                        guides={false}
+                                        aspectRatio={1}
+                                        autoCropArea={0}
+                                        toggleDragModeOnDblclick={false}
+                                        zoomOnWheel={false}
+                                        background={false}
+                                        ref={instance => {
+                                            setCropper(instance)
+                                        }}
+                                    />
                                 </div>
-
-                                <div className="form-group edit-profile-group">
-                                    <div className="edit-profile-file-form">
-                                        {/*<!-- cut image scripts -->*/}
-
-                                        <link href="/css/cropper.css" type='text/css' rel="stylesheet" />
-                                        <script src="/javascript/cropper.js" />
-                                        {/*<!-- input -->*/}
-                                        <span className="edit-profile-element" id="edit-profile-title-porfilePic">Cambiar foto de Perfil</span>
-                                        <div className="preview-div">
-                                            {/*<!-- Preview -->*/}
-                                            <div id="editor" className='disabled' onClick={getData}>
-                                                <Cropper
-                                                    src={image}
-                                                    style={{ height: '100%', maxWidth: '100%' }}
-                                                    // Cropper.js options
-                                                    guides={false}
-                                                    aspectRatio={1}
-                                                    autoCropArea={0}
-                                                    toggleDragModeOnDblclick={false}
-                                                    zoomOnWheel={false}
-                                                    background={false}
-                                                    ref={instance => {
-                                                        setCropper(instance)
-                                                    }}
-                                                />
-                                            </div>
-                                            <input onChange={change} id="file" className="edit-profile-element" accept="image/*" type="file" name="image" />
-                                            <div id="div-editor-buttons">
-                                                <input value='Guardar' type='button' id='cropper-save' className={`disabled edit-profile-btn-body ${theme === 'light' ? 'bg-light' : 'bg-dark'}`} onClick={cropperHide} />
-                                                <label id='cropper-search' htmlFor="file" className={`editor-btn ${theme === 'light' ? 'bg-light' : 'bg-dark'}`}>
-                                                    <div className="edit-profile-btn-body">
-                                                        <span className="material-icons notranslate">
-                                                            file_upload
-                                                        </span>
-                                                        Examinar
-                                                    </div>
-                                                </label>
-                                                <input value='Borrar' type='button' id='cropper-delete' className={`disabled edit-profile-btn-body ${theme === 'light' ? 'bg-light' : 'bg-dark'}`} onClick={cropperRemove} />
-                                            </div>
-                                            
+                                <input onChange={change} id="file" className="edit-profile-element" accept="image/*" type="file" name="image" />
+                                <div id="div-editor-buttons">
+                                    <input value='Guardar' type='button' id='cropper-save' className={`disabled edit-profile-btn-body `} onClick={cropperHide} />
+                                    <label id='cropper-search' htmlFor="file" className={`editor-btn `}>
+                                        <div className="edit-profile-btn-body">
+                                            <span className="material-icons notranslate">
+                                                file_upload
+                                            </span>
+                                            Examinar
                                         </div>
-                                    </div>
+                                    </label>
+                                    <input value='Borrar' type='button' id='cropper-delete' className={`disabled edit-profile-btn-body `} onClick={cropperRemove} />
                                 </div>
-
-                                <div className="form-group edit-profile-group">
-                                    <span className="edit-profile-element">Descripción</span>
-                                    <textarea className="edit-profile-element" name="description" defaultValue={userState.description} cols="60" rows="5" placeholder="Cuentanos de ti..."/>
-                                </div>
-
-                                <div onMouseEnter={() => {
-                                    if(dim.length === 0 && document.querySelector('#file').files.length)getData();
-                                }} onClick={sendCropData} className="form-group edit-profile-btn-div">
-                                    <div className="edit-profile-btn-body">
-                                        <span class="loading-btn material-icons notranslate">
-                                            save
-                                        </span>
-                                        Guardar
-                                    </div>
-                                </div>
-
-                            </form>
-
+                                
                             </div>
                         </div>
                     </div>
-                </div>
-                <footer>
-                    <Aside />
-                </footer>
-            </React.StrictMode>
-        </div>
+
+                    <div className="form-group edit-profile-group">
+                        <span className="edit-profile-element">Descripción</span>
+                        <textarea className="edit-profile-element" name="description" defaultValue={userState?.description} cols="60" rows="5" placeholder="Cuentanos de ti..."/>
+                    </div>
+
+                    <div onMouseEnter={() => {
+                        if(dim.length === 0 && document.querySelector('#file').files.length)getData();
+                    }} onClick={sendCropData} className="form-group edit-profile-btn-div">
+                        <div className="edit-profile-btn-body">
+                            <span className="loading-btn material-icons notranslate">
+                                save
+                            </span>
+                            Guardar
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </>
     )
 }
 

@@ -4,6 +4,17 @@ footer{
     position: relative;
 }
 
+footer[id=void]{
+    height: 100%;
+    width: 10%;
+}
+
+footer[id=void] #aside{
+    position: fixed;
+    height: 100%;
+    border-left: 1px solid #888;
+}
+
 #aside{
     display: flex;
     flex-direction: column;

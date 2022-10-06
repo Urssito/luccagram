@@ -30,6 +30,21 @@
 
 .chat-user{
     font-weight: 900;
+    display: flex;
+    flex-direction: row;
+}
+
+.new-msg{
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background-color: #c23;
+    font-size: 10px;
+    color: #fff;
+    position: relative;
+    top: 5px;
+    left: 5px;
+    outline: 1px solid #fff;
 }
 
 .chat-preview{
@@ -43,7 +58,7 @@
 }
 
 #active-chat .top-bar{
-    max-width: 330px;
+    border-bottom: none;
 }
 
 #chat-header{
@@ -59,12 +74,17 @@
     margin: 3px 8px;
 }
 
+.msg-text{
+    word-wrap: break-word;
+}
+
 #active-chat-body{
     width: 100%;
     display: flex;
     flex-direction: column;
     overflow: auto;
     overflow-x: hidden;
+    border-top: 1px solid #888;
 }
 
 #chat-input-div{
@@ -75,6 +95,7 @@
     position:absolute;
     bottom: 0;
     width:100%;
+    max-width: 626px;
     height:60px;
 }
 
@@ -120,7 +141,7 @@
     padding: 7px;
     margin: 4px 3px;
     border-radius: 5px;
-
+    max-width: 285px;
 }
 
 .msg-boxB{
@@ -137,17 +158,5 @@
     padding: 7px;
     margin: 4px 3px;
     border-radius: 5px;
-}
-
-@media only screen and (max-width: 600px) {
-    .top-bar{
-        max-width: none !important;
-        z-index: 2;
-    }
-
-    #chat-input{
-        margin: 0;
-        position: fixed;
-        bottom: 70px;
-    }
+    max-width: 285px;
 }

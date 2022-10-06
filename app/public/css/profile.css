@@ -70,6 +70,10 @@
     border: 1px solid #888;
 }
 
+.profile-description{
+    word-wrap: break-word;
+}
+
 .span-edit-profile{
     display: flex;
     flex-direction: row;
@@ -250,59 +254,67 @@ label{
     max-height: 430px;
 }
 
-@media only screen and (max-width: 600px) {
-    .username-text{
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        margin: 0;
-    }
-    
-    .follow-btn{
-        margin: 0;
-    }
-    
-    #edit-profile-button{
-        width: 60%;
-        height: auto;
-        margin: 0;
-    }
+/* Mobile Styles */
 
-    #profile-opts{
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-    }
+.mobile-username-text{
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 0;
+}
 
-    #logout-mobile{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 5px;
-    }
+.mobile-follow-btn{
+    margin: 0;
+}
 
-    #logout-menu{
-        background-color: #fff !important;
-        border-radius: 5px;
-        padding: 20px 20px 20px 10px;
-    }
+.mobile-profile-btn{
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-    #logout-opts{
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        justify-content: flex-end;
-        margin-top: 25px;
-    }
+#mobile-edit-profile-button{
+    width: 60%;
+    height: auto;
+    margin: 0;
+}
 
-    #logout-opts div{
-        padding: 5px;
-        margin: 0 0 0 10px;
-    }
+#mobile-profile-opts{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
 
-    #logout-confirm{
-        background-color: #d23;
-        color: #fff;
-        border-radius: 5px;
-    }
+#mobile-logout{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+#mobile-logout-menu{
+    background-color: #fff !important;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+#mobile-logout-opts{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 25px;
+}
+
+#mobile-logout-opts div{
+    padding: 5px;
+    margin: 0 0 0 10px;
+}
+
+#mobile-logout-confirm{
+    background-color: #d23;
+    color: #fff;
+    border-radius: 5px;
 }

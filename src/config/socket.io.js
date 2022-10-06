@@ -1,3 +1,5 @@
+const chatModel= require('../models/chats');
+
 let onlineUsers = []
 
 module.exports = (io) => {
@@ -15,7 +17,6 @@ module.exports = (io) => {
         });
 
         socket.on('notification', async(data) => {
-            console.log(data)
             if(data.receiver.length === 1){
                 const [user] = onlineUsers.filter(userid => data.receiver === userid[0]);
                 if(user)io.to(user[1]).emit('newNotification', data);
@@ -26,6 +27,7 @@ module.exports = (io) => {
 
         socket.on('chat', (data) => {
             const [user] = onlineUsers.filter(userid => data.receiver === userid[0]);
+            //chatModel.updateOne({users: {$all: [data.transmitter, data.receiver]}},{see:false})
             if(user)io.to(user[1]).emit('newMsg', [data.transmitter, data.msg]);
         })
 

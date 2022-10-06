@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useSocket } from '../../Contexts/socket.jsx';
 import {useUser} from '../../Contexts/user.jsx'
-import Aside from '../main/aside.jsx';
-import Header from '../main/Header.jsx'
 import Loading from '../partials/loading.jsx';
 import Publication from '../publications/publication.jsx'
 import {getUser} from '../../modules/getUsers.jsx';
-import ErrorMsg from '../partials/error.jsx';
 import { getPubs } from '../../modules/getPubs.jsx';
 import {useTheme} from "../../Contexts/theme.jsx";
 import Schema from '../main/schema.jsx';
+import { useMobile } from '../../Contexts/mobile.jsx';
+import { Link } from "react-router-dom"
 
 function Profile() {
     return(
@@ -20,6 +19,7 @@ function Profile() {
 function ProfileContent() {
     const {theme} = useTheme();
     const {socket} = useSocket();
+    const {isMobile} = useMobile();
     const {userState, token} = useUser();
     const [user, setUser] = useState(null);
     const [pubs, setPubs] = useState(null)
@@ -88,17 +88,17 @@ function ProfileContent() {
 
     useEffect(async() => {
         if(!user)await gettingUser();
-        if(followed === null && user !== null){
+        if(followed === null && user !== null && userState){
             await getFollowers();
             setLoading(false);
         }
-    }, [user])
+    }, [user, userState])
 
     if(!loading){
-
         return (
             <>
-                <div className={`top-bar ${theme === 'light' ? 'bg-light' : 'bg-dark'}`}>
+                {openLogout ? <Logout setOpenLogout={setOpenLogout} /> : ''}
+                <div className={isMobile ? 'mobile-top-bar' : 'top-bar'}>
                     <div className="back-btn-div" onClick={()=>{window.history.back()}}>
                         <span className="back-btn material-icons notranslate">
                             arrow_back
@@ -108,23 +108,23 @@ function ProfileContent() {
                 </div>
                 <div className="top-bar-space" />
                 <div className="profile-header">
-
+    
                     <div className="profile-header-div">
                         <img className="profilePic" src={user ? user.profilePic : ''} alt={user.user} />
                         <div id="profile-header-data">
-                            <div className="username-text">
+                            <div className={isMobile ? "mobile-username-text username-text" : "username-text"}>
                                 {user.user}
-                                <div id='profile-opts'>
+                                <div id={isMobile ? 'mobile-profile-opts':'profile-opts'}>
                                     {user.user === userState.user ? 
-                                    <a href="/profile/edit" id='edit-profile-button' className="a-normalize">
-                                        {screen.width >= 600 ? 'Editar perfil' :
+                                    <Link to="/profile/edit" id={isMobile ? 'mobile-edit-profile-button' : 'edit-profile-button'} className="mobile-profile-btn a-normalize">
+                                        {!isMobile ? 'Editar perfil' :
                                         <span className='material-icons gicon notranslate'>
                                             settings
                                         </span>
                                         }
-                                    </a> : <Follow follow={follow} followed={followed} />}
-                                    {user.user === userState.user && screen.width < 600 ? 
-                                        <a id='logout-mobile' onClick={()=>{setOpenLogout(true)}} className="a-normalize">
+                                    </Link> : <Follow follow={follow} followed={followed} />}
+                                    {user.user === userState.user && isMobile ? 
+                                        <a id='mobile-logout' onClick={()=>{setOpenLogout(true)}} className="mobile-profile-btn a-normalize">
                                             <span className='material-icons gicon notranslate'>
                                                 logout
                                             </span>
@@ -132,7 +132,7 @@ function ProfileContent() {
                                     }
                                 </div>
                             </div>
-                            <div className="profile-description">
+                            <div style={isMobile ? {maxWidth: '260px'}: {maxWidth: '375px'}} className="profile-description">
                                 {user.description}
                             </div>
                         </div>
@@ -145,14 +145,13 @@ function ProfileContent() {
                         <div className="card mx-auto">
                             <div className="card-body">
                                 <p className="lead">No publicaste nada :(</p>
-                                <a href="/upload" className="btn btn-success btn-block">Publica algo!</a>
+                                <Link to="/upload" className="btn btn-success btn-block">Publica algo!</Link>
                             </div>
                         </div>
                     }
                 </div>
-                {screen.width < 600 ? <div id="bottom-bar-space" /> : ''}
+                {isMobile ? <div id="bottom-bar-space" /> : ''}
             </>
-                    
         )
     }else{
         return <Loading />
@@ -160,11 +159,12 @@ function ProfileContent() {
 }
 
 const Follow = ({follow, followed}) => {
+    const {isMobile} = useMobile();
     const {theme} = useTheme();
 
     if(!followed){
         return(
-            <button onClick={follow} type="button" className="a-normalize follow-btn" id='follow'>
+            <button onClick={follow} type="button" className={`a-normalize ${isMobile ? 'mobile-':''}follow-btn`} id='follow'>
                 <span className="material-icons notranslate">
                     person_add
                 </span>
@@ -173,7 +173,7 @@ const Follow = ({follow, followed}) => {
         )
     }else{
         return(
-            <button onClick={follow} type="button" className={`a-normalize follow-btn ${theme === 'light' ? 'bg-light' : 'bg-dark'}`} id='followed'>
+            <button onClick={follow} type="button" className={`a-normalize ${isMobile ? 'mobile-':''}follow-btn`} id='followed'>
                 <span className="material-icons notranslate">
                     done
                 </span>
@@ -207,21 +207,19 @@ const Logout = ({setOpenLogout}) => {
     }, [])
 
     return(
-        <>
-            <div id='login-form-bg'>
-                <div id="logout-menu" className={theme === 'light' ? 'bg-light' : 'bg-dark'}>
-                    ¿Seguro que desea cerrar sesión?
-                    <div id="logout-opts">
-                        <div id="logout-cancel" onClick={()=>{setOpenLogout(false)}}>
-                            Cancelar
-                        </div>
-                        <div id="logout-confirm" onClick={logout}>
-                            Cerrar Sesión
-                        </div>
+        <div id='login-form-bg'>
+            <div id="mobile-logout-menu" className={theme === 'light' ? 'bg-light' : 'bg-dark'}>
+                ¿Seguro que desea cerrar sesión?
+                <div id="mobile-logout-opts">
+                    <div id="mobile-logout-cancel" onClick={()=>{setOpenLogout(false)}}>
+                        Cancelar
+                    </div>
+                    <div id="mobile-logout-confirm" onClick={logout}>
+                        Cerrar Sesión
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

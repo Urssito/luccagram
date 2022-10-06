@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import Header from '../main/Header.jsx';
-import Aside from '../main/aside.jsx';
 import { useUser } from '../../Contexts/user.jsx';
 import { useEffect } from 'react';
 import Loading from '../partials/loading.jsx'
@@ -34,7 +32,7 @@ function NotificationsContent() {
     }
 
     const sawNoti = async() => {
-        await fetch('/api/sawNoti', {
+        fetch('/api/sawNoti', {
             method: 'PUT',
             headers: {
                 'content-type': 'application/json',
@@ -47,8 +45,10 @@ function NotificationsContent() {
     };
 
     useEffect(() => {
-        getNotis();
-        sawNoti();
+        if(userState){
+            getNotis();
+            sawNoti();
+        }
         document.getElementById('new-notification-div')?.classList.add('disabled')
     }, [userState])
 
@@ -75,6 +75,7 @@ function NotificationsContent() {
 
 const Notification = ({notifications}) => {
 
+    console.log(notifications)
     const goNoti = (link) => {
         window.location = link
     };

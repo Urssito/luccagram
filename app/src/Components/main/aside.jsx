@@ -69,7 +69,7 @@ function Aside() {
             window.clearTimeout(timeOutID);
             setTimeOutID(undefined);
         }
-        setTimeOutID(window.setTimeout(()=>{searching()}, 600));
+        setTimeOutID(window.setTimeout(()=>{searching()}, 300));
     }
 
     useEffect(() => {
@@ -89,11 +89,11 @@ function Aside() {
             <div id="aside">
                 <div id="aside-pos">
                         <div id="search-div">
-                                <div id="search-input-div">
-                                    <span className='material-icons notranslate'>search</span>
-                                    <input onKeyUp={sendData} id="search-input" type="text" placeholder="Buscar"/>
-                                </div>
-                                <div id="results"></div>
+                            <div id="search-input-div">
+                                <span className='material-icons notranslate'>search</span>
+                                <input onKeyUp={sendData} id="search-input" type="text" placeholder="Buscar"/>
+                            </div>
+                            <div id="results"></div>
                         </div>
                         <div id="chats">
                             {chats ? chats.map((chat, i) => (

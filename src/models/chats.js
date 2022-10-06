@@ -5,6 +5,7 @@ const chats = new Schema({
 
     users: [],
     chat: [],
+    see: {type: Boolean, required:true, default: true}
 
 });
 

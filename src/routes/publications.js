@@ -30,6 +30,9 @@ router.post("/api/upload", isAuthenticated, async(req, res) => {
     if(!publication || publication.replace(/ /g, '') === ''){
         errors.push("la publicacion no puede estar vacia.");
     };
+    if(publication.length > 1000){
+        errors.push('su publicacion es demasiado larga')
+    }
     if(errors.length > 0)
     {
         res.json({errors});
@@ -46,15 +49,13 @@ router.post("/api/upload", isAuthenticated, async(req, res) => {
         .then(() => {
 
             const newNoti = new modelNoti({
-                transmitter: userdb.user,
+                transmitter: userdb.user+'-'+userdb.profilePic,
                 title: 'newPub',
                 description: publication,
                 receiver: userdb.followers,
                 link: '/publication/'+ newPublication.id
             });
-            newNoti.save()
-        }).then(() => {
-            const socket = req.app.get('socketio');
+            newNoti.save();
         })
 
         res.status(203).json({pubID: newPublication.id});

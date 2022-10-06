@@ -7,14 +7,14 @@ import Unlogged from "../partials/unlogged.jsx";
 import { useState } from "react";
 
 const Schema = ({Content}) => {
-    const {isMobile} = useMobile();
+    const {isMobile, widthS} = useMobile();
     const {userState, token} = useUser();
     const [active, setActive] = useState(false)
 
     return(
         <div id="app-body">
             {!isMobile ? 
-                <header>
+                <header id={widthS === 'large' ? '' : 'medium'}>
                     <Header />
                 </header>
                 :''
@@ -26,16 +26,28 @@ const Schema = ({Content}) => {
                 </div>
             </div>
         </div>
-        {!isMobile ? 
-            <footer>
-                <Aside />
-            </footer>
-            :
-            token ?
-            <div id="mobile-header">
-                <Header />
-            </div>:''
-        }
+        {(() => {
+            if(!isMobile){
+                if(widthS !== 'mediumS'){
+                    return(
+                        <footer>
+                            <Aside />
+                        </footer>
+                    )
+                }else{
+                    return <footer id='void'><div id="aside" /></footer>
+                }
+            }
+        })()}
+        {(() => {
+            if(token && isMobile){
+                return(
+                    <div id="mobile-header">
+                        <Header />
+                    </div>
+                )
+            }
+        })()}
         {!token ? <Unlogged /> : ''}
         </div>
     )

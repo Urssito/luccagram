@@ -5,7 +5,6 @@ import { useTheme } from "../../Contexts/theme.jsx";
 import { useMobile } from "../../Contexts/mobile.jsx";
 
 const Unlogged = () => {
-    const {theme} = useTheme();
     const [form, setForm] = useState('none')
 
     useEffect(() => {
@@ -64,7 +63,11 @@ const Form = ({form, setForm}) => {
                 console.log(form)
                 switch(form){
                     case 'login':
-                        return <Login />
+                        return <Login setErrors={setErrors} />
+                    case 'signup':
+                        return <SingUp setErrors={setErrors} />
+                    case 'forgetPass':
+                        return <ForgetPass setErrors={setErrors} />
 
                 }
             })()}
@@ -105,13 +108,13 @@ const Form = ({form, setForm}) => {
     // )
 }
 
-const Login = () => {
+const Login = ({setErrors}) => {
     const {isMobile} = useMobile(); 
 
     async function logging(e){
         e.preventDefault()
 
-        const remember = document.getElementsByName('remember')[0].value;
+        const remember = document.getElementsByName('remember')[0];
         const user = document.getElementsByName('user')[0].value;
         const password = document.getElementsByName('password')[0].value;
 
@@ -129,10 +132,11 @@ const Login = () => {
             if (data.errors){
                 setErrors(data.errors)
             }else{
-                if(remember.checked){
-                    document.cookie += "auth-token=" + data.token + ";max-age" + 60*60*24*365*100;
+                console.log(remember.checked)
+                if(!remember.checked){
+                    document.cookie += `auth-token=${data.token}; path=/`
                 }else{
-                    document.cookie += "auth-token=" + data.token;
+                    document.cookie += `auth-token=${data.token}; max-age=${60*60*24*365}; path=/`
                 }
                 window.location.reload();
             }
@@ -156,7 +160,7 @@ const Login = () => {
 
 }
 
-const SingUp = () => {
+const SingUp = ({setErrors}) => {
     const {isMobile} = useMobile(); 
 
     const signUp = async (e) => {
@@ -186,7 +190,7 @@ const SingUp = () => {
         if(data.errors){
             setErrors(data.errors);
         }else{
-            document.cookie = "auth-token=" + data.token + ";SameSite=None";
+            document.cookie += `auth-token=${data.token}; max-age=${60*60*24*365}; secure`;
             window.location.href = '/';
         }
 
@@ -198,7 +202,7 @@ const SingUp = () => {
             <input type="password" placeholder="contraseña" name="password" id="password" className={!isMobile ? 'form-input': 'mobile-form-input'} />
             <input type="password" placeholder="confirmar contraseña" name="confirm-password" id="confirm-password" className={!isMobile ? 'form-input': 'mobile-form-input'} />
             <input type="text" placeholder="e-mail" name="email" id="email" className={!isMobile ? 'form-input': 'mobile-form-input'} />
-            <input onClick={signUp} type="submit" value="Ingresar" id="submit" className={!isMobile ? 'form-input': 'mobile-form-input'} />
+            <input onClick={signUp} type="submit" value="Registrarse" id="submit" className={!isMobile ? 'form-input': 'mobile-form-input'} />
         </div>
     )
 }

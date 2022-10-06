@@ -5,13 +5,17 @@ export const MobileContext = React.createContext()
 
 export function MobileProvider(props) {
     const [isMobile, setIsMobile] = useState(null);
-    const [widthS, setWidthS] = useState(false)
+    const [widthS, setWidthS] = useState('')
 
     useEffect(() => {
         const widthObs = new ResizeObserver((entries) => {
-            if(entries[0].contentRect.width < 600){
-                setWidthS(true)
-                console.log('mobile!')
+            if(entries[0].contentRect.width < 770)setWidthS('mobile')
+            else {
+                if(entries[0].contentRect.width < 1300){
+                    if(entries[0].contentRect.width > 1100) setWidthS('mediumL')
+                    else setWidthS('mediumS');
+                }
+                else setWidthS('large')
             }
         });
         widthObs.observe(document.body)
@@ -24,13 +28,14 @@ export function MobileProvider(props) {
         if(/windows phone/i.test(userAgent)) setIsMobile(true);
         else if(/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) setIsMobile(true);
         else if(/android/i.test(userAgent))setIsMobile(true);
-        else if(widthS) setIsMobile(true)
+        else if(widthS === 'mobile') setIsMobile(true)
         else setIsMobile(false)
         
         return({
-            isMobile
+            isMobile,
+            widthS
         });
-    }, [isMobile, setWidthS]);
+    }, [isMobile, widthS]);
 
     return <MobileContext.Provider value={value}>
         {props.children}
