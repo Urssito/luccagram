@@ -10,7 +10,6 @@ function Notifications() {
 }
 
 function NotificationsContent() {
-    const {theme} = useTheme();
     const {userState, token} = useUser();
     const [notifications, setNotifications] = useState(['']);
     const [loading, setLoading] = useState(true);
@@ -27,7 +26,6 @@ function NotificationsContent() {
         then((data) => {
             setNotifications(data);
             setLoading(false);
-            console.log(data[0]);
         })
     }
 
@@ -75,7 +73,6 @@ function NotificationsContent() {
 
 const Notification = ({notifications}) => {
 
-    console.log(notifications)
     const goNoti = (link) => {
         window.location = link
     };

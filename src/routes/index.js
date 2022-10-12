@@ -82,16 +82,12 @@ router.get("/api/authenticate", isAuthenticated, async (req, res) => {
     let resUser = null;
     if(userdb){
         resUser = await JSON.parse(JSON.stringify(userdb));
-        const notidb = await notiModel.find({
-            receiver: {$all: [userdb.id]},
-            see: {$nin: [userdb.id]}
-        });
         delete resUser['password'];
         delete resUser['_id']
         delete resUser['Google']
         resUser.id = userdb.id
 
-        res.json({resUser, newNotis: notidb.length});
+        res.json({resUser});
     }
     else res.json({});
 });

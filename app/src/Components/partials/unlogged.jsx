@@ -73,39 +73,6 @@ const Form = ({form, setForm}) => {
             })()}
         </div>
     )
-
-    // return (
-    //     <div id="login-form-div">
-    //         {errors ? <ErrorMsg errors={errors} /> : '' }
-    //             {document.body.clientWidth >= 600 ? <div className="notranslate" id="title">Luccagram</div>:
-    //             <>
-    //                 <div className="notranslate" id="title">Luccagram</div>
-    //                 <span onClick={() => {setActive(false)}} id="close-btn" className="material-icons notranslate">close</span>
-    //             </>
-    //             }
-    //         {form === 'login' ? forgetPass ?
-    //             <div id="login-form">
-    //                 <input type="text" placeholder="usuario" name="user" id="username" className={!isMobile ? 'form-input': 'mobile-form-input'} autoFocus />
-    //                 <input type="password" placeholder="contraseña" name="password" id="password" className={!isMobile ? 'form-input': 'mobile-form-input'} />
-    //                 <input onClick={logging} type="submit" value="Ingresar" id="submit" className={!isMobile ? 'form-input': 'mobile-form-input'} />
-    //                 <span id="remember-div" className={!isMobile ? 'form-input': 'mobile-form-input'} >
-    //                     <input type="checkbox" name="remember" id="remember" />
-    //                     <label htmlFor="remember"> Mantener sesión iniciada </label>
-    //                 </span>
-    //                 <span id="forgetPass" onClick={() => {setForgetPass(!forgetPass)}} className="a-normalize">¿Olvidaste tu contraseña?</span>
-    //             </div>: <ForgetPass />
-    //             :
-
-    //         <div id="login-form">
-    //             <input type="text" placeholder="usuario" name="user" id="username" className={!isMobile ? 'form-input': 'mobile-form-input'} autoFocus />
-    //             <input type="password" placeholder="contraseña" name="password" id="password" className={!isMobile ? 'form-input': 'mobile-form-input'} />
-    //             <input type="password" placeholder="confirmar contraseña" name="confirm-password" id="confirm-password" className={!isMobile ? 'form-input': 'mobile-form-input'} />
-    //             <input type="text" placeholder="e-mail" name="email" id="email" className={!isMobile ? 'form-input': 'mobile-form-input'} />
-    //             <input onClick={signUp} type="submit" value="Ingresar" id="submit" className={!isMobile ? 'form-input': 'mobile-form-input'} />
-    //         </div>
-    //         }
-    //     </div>
-    // )
 }
 
 const Login = ({setErrors}) => {

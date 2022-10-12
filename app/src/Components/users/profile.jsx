@@ -20,7 +20,7 @@ function ProfileContent() {
     const {theme} = useTheme();
     const {socket} = useSocket();
     const {isMobile} = useMobile();
-    const {userState, token} = useUser();
+    const {userState, token, setUserState} = useUser();
     const [user, setUser] = useState(null);
     const [pubs, setPubs] = useState(null)
     const [loading, setLoading] = useState(true)
@@ -64,6 +64,7 @@ function ProfileContent() {
             const data = await res.json();
             setFollowed(data.followed);
             if(data && !followed){
+                setUserState({...userState, follows: [...userState.follows, data.userToFollow]})
                 const notiData = {
                     transmitter: userState.user+'-'+userState.profilePic,
                     title: 'follow',
@@ -83,7 +84,10 @@ function ProfileContent() {
                 .then(dataNoti => {
                     if(dataNoti)socket.emit('notification', notiData);
                 })
-            }
+            }else {
+
+            } //setUserState({...userState, follows: userState.follows.slice(0,-1)})
+            
     };
 
     useEffect(async() => {

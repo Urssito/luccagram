@@ -107,6 +107,15 @@
     width: 100%;
 }
 
+#mobile-chat-input{
+    display: flex;
+    flex-direction: row;
+    background-color: #ddd;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
+
 #chat-text{
     width: 100%;
     height: auto;

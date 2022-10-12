@@ -12,6 +12,7 @@ const Chat = ({chatid}) => {
     const [lastMsg, setLastMsg] = useState('');
     const [see, setSee] = useState(true)
     const {socket} = useSocket();
+    const {isMobile} = useMobile();
     
     useEffect(async() => {
         if(chatid){
@@ -73,7 +74,7 @@ const Chat = ({chatid}) => {
             for (let i of chats){
                 i.classList.add('disabled')
             }
-            if(screen.width < 600){
+            if(isMobile){
                 if(bottomBar) bottomBar.style.height = '132px';
             }
         }else{
@@ -210,18 +211,18 @@ const ChatActive = ({user, switchActive, chat, setChat, msgEnd, chatid}) => {
                 <div id="active-chat-body" style={{'height': document.body.clientHeight-185+'px'}}>
                     <div id="msgs">
                         {
-                        chat[0] ? chat.map((msg, i) =>    {
-                            return(<div key={'msg-box-'+i} className={msg[0] === user.id ? 'msg-boxA' : 'msg-boxB'}>
-                                <div key={'msg-'+i} className={msg[0] === user.id ? 'userA msg-text' : 'userB msg-text'}>
-                                    {msg[1]}
-                                </div>
-                            </div>)
-                        }):''
+                            chat[0] ? chat.map((msg, i) => {
+                                return(<div key={'msg-box-'+i} className={msg[0] === user.id ? 'msg-boxA' : 'msg-boxB'}>
+                                    <div key={'msg-'+i} className={msg[0] === user.id ? 'userA msg-text' : 'userB msg-text'}>
+                                        {msg[1]}
+                                    </div>
+                                </div>)
+                            }):''
                         }
                     </div>
                     <div ref={msgEnd} />
                     {isMobile ? 
-                        <div id="chat-input">
+                        <div id="mobile-chat-input">
                             <textarea onKeyDown={submit} id="chat-text" type="text" placeholder="Escribe un mensaje" />
                             <button onClick={send} id="chat-send" type="button"><span className="material-icons notranslate">send</span></button>
                         </div>:''
@@ -229,16 +230,18 @@ const ChatActive = ({user, switchActive, chat, setChat, msgEnd, chatid}) => {
                 </div>
             </div>
             {!isMobile ? 
-                <div id='chat-input-space'/>: ''}
+                <div id='chat-input-space'/>
+            : ''
+            }
                 <div id="chat-input-div">
-                    {screen.width >= 600 ? 
+                    {!isMobile ? 
                         <div id="chat-input">
                             <textarea onKeyDown={submit} id="chat-text" type="text" placeholder="Escribe un mensaje" />
                             <button onClick={send} id="chat-send" type="button"><span className="material-icons notranslate">send</span></button>
                         </div>:''
                     }
                 </div>
-            {screen.width >= 600 ? '':''}
+            {isMobile ? '':''}
         </>
     : '')
 

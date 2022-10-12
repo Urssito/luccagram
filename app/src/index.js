@@ -4,6 +4,8 @@ import {render} from 'react-dom';
 import App from './App.jsx';
 
 render(
-    <App />,
+    <React.StrictMode >
+        <App />
+    </React.StrictMode>,
     document.getElementById('app')
 );

@@ -47,7 +47,7 @@ router.post("/api/signup", async (req, res) => {
         if(emailUser || userUser){
             if(emailUser) errors.push("el email ya está en uso");
             if(userUser) errors.push("el nombre de usuario ya esta en uso");
-            if(userUser.length > 16) errors.push('su usuario no debe tener mas de 16 caracteres')
+            if(user.length > 16) errors.push('su usuario no debe tener mas de 16 caracteres')
             else if(description.length > 160) errors.push('su descripcion no debe tener mas de 160 caracteres')
             res.status(401).json({errors})
             err = true;
@@ -230,14 +230,13 @@ router.post('/api/follow', isAuthenticated, async (req,res) => {
     userdb.save();
     userToFollow.save();
 
-    res.json({followed})
+    res.json({followed, userToFollow: userToFollow.id})
 })
 
 router.get('/api/getFollow', isAuthenticated, async (req, res) => {
     const userdb = await userModel.findById(req.user);
     const user = req.get('user');
     const userToFollow = await userModel.findOne({user});
-    //console.log(user)
     
     if(userToFollow){
         if(userdb.follows.includes(userToFollow.id)){
@@ -248,11 +247,44 @@ router.get('/api/getFollow', isAuthenticated, async (req, res) => {
     }
 });
 
-router.get('/api/getNotifications', isAuthenticated, async (req, res) => {
-    const id = req.get('id');
-    const notifications = await notiModel.find({ receiver: {$all: [id]}}).sort({'date': -1}).limit(20);
-    notifications ? res.status(200).json(notifications) : res.status(401);
+router.get('/api/verifyNewNotifications', isAuthenticated, async(req, res) => {
+    const notidb = await notiModel.find({
+        receiver: {$all: [req.user]},
+        see: {$nin: [req.user]}
+    });
+    console.log(notidb)
+    res.status(200).json({newNotis: notidb.length})
 })
+
+router.get('/api/getNotifications', isAuthenticated, async (req, res) => {
+    notiModel.find({ receiver: {$all: [req.user]}}).sort({'date': -1}).limit(20).then(notis => {
+        notis ? res.status(200).json(notis) : res.status(200).json(null);
+    })
+})
+
+router.put('/api/sawNoti', isAuthenticated, async(req, res) => {
+    const {user} = req.body;
+    await notiModel.updateMany(
+        {
+            $and:[ {
+                receiver: {$all: [user]}},
+                {see: {$nin: [req.user]}}
+            ]
+        },
+        {
+            $push: {see: user}
+        }
+    );
+    res.status(200).json({});
+});
+
+router.post('/api/newNoti', isAuthenticated, async(req, res) => {
+    console.log('nueva notificacion')
+    const newNoti = new notiModel(req.body);
+    newNoti.save().then(() => {
+        res.status(203).json({status: 'ok'})
+    })
+});
 
 router.get('/api/getUser', async(req, res) => {
     let userId = req.get('user');
@@ -309,20 +341,5 @@ router.put('/api/chatSee', isAuthenticated, async(req, res) => {
     await chatModel.updateOne({users: {$all: [userA, userB]}},{see});
     res.json({})
 })
-
-router.put('/api/sawNoti', isAuthenticated, async(req, res) => {
-    console.log('noti visto')
-    const {user} = req.body;
-    await notiModel.updateMany({receiver: {$all: [user]}}, {$push: {see: user}});
-    res.status(200).json({});
-});
-
-router.post('/api/newNoti', isAuthenticated, async(req, res) => {
-    console.log('nueva notificacion')
-    const newNoti = new notiModel(req.body);
-    newNoti.save().then(() => {
-        res.status(203).json({status: 'ok'})
-    })
-});
 
 module.exports = (router);

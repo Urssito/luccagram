@@ -1,9 +1,9 @@
-import React, {useEffect, useMemo, useContext, useState} from 'react';
+import React, {useMemo, useContext, useState} from 'react';
 
-const UserContext = React.createContext(null);
+const UserContext = React.createContext();
 
-export function UserProvider(props) {
-    const [userState, setUser] = useState(null);
+function UserProvider(props) {
+    const [userState, setUserState] = useState(null);
     const [token, setToken] = useState('');
 
     const fetchUser = async() => {
@@ -17,8 +17,7 @@ export function UserProvider(props) {
             .then(res => res.json())
             .then(data => {
                 if(data.resUser) {
-                    data.resUser.newNotis = data.newNotis;
-                    setUser(data.resUser);
+                    setUserState(data.resUser);
                 }else{
                     document.cookie = 'auth-token=;secure;max-age=0;SameSite=None';
                 }
@@ -31,7 +30,8 @@ export function UserProvider(props) {
         const cookies = document.cookie.split(';');
         cookies.forEach(c => {
             if(c.includes('auth-token')){
-                setToken(c.split('=').pop());
+                const auth = c.split('=').pop();
+                setToken(auth);
             }
         })
     }
@@ -42,7 +42,8 @@ export function UserProvider(props) {
         fetchUser();
         return ({
             userState,
-            token
+            token,
+            setUserState
         })
     }, [token, userState])
 
@@ -52,10 +53,11 @@ export function UserProvider(props) {
 
 }
 
-export const useUser = () => {
+const useUser = () => {
     const context = useContext(UserContext);
     if(!context){
         throw new Error('useUser must be in UserContext provider');
     }
     return context;
 }
+export {useUser, UserProvider}

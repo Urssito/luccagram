@@ -28,11 +28,13 @@ const PubPageContent = () => {
         if(data){
             setPub(data);
             setLoading(false);
+            console.log(data)
         };
     };
 
     useEffect(() => {
         getPub();
+        console.log(pub)
     }, [])
     
     if(!loading){
@@ -44,7 +46,7 @@ const PubPageContent = () => {
                             arrow_back
                         </span>
                     </div>
-                    <span className='top-bar-title'>publicacion de {pub ? pub.user:''}</span>
+                    <span className='top-bar-title'>publicacion de {pub[0]?.user}</span>
                 </div>
                 <div className="top-bar-space" />
                 {pub ? <Publication pubs={pub} />:''}

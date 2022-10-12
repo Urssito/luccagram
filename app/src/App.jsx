@@ -20,7 +20,7 @@ export default () =>
             <SocketProvider props={null}>
                 <MobileProvider props={null}>
                     <ThemeProvider props={null}>
-                        <App />
+                            <App />
                     </ThemeProvider>
                 </MobileProvider>
             </SocketProvider>
@@ -35,7 +35,6 @@ export function App () {
     const [notification, setNotification] = useState(null);
 
     socket.on('newNotification',async(data) => {
-        console.log(data)
         const [username, profilePic] = data.transmitter.split('-');
         const notiDisabled = document.getElementById('notify-position').classList.contains('disabled');
         if(notiDisabled && data.receiver.includes(userState?.id)){

@@ -8,8 +8,7 @@ import { useState } from "react";
 
 const Schema = ({Content}) => {
     const {isMobile, widthS} = useMobile();
-    const {userState, token} = useUser();
-    const [active, setActive] = useState(false)
+    const {token} = useUser();
 
     return(
         <div id="app-body">

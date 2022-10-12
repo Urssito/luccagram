@@ -1,12 +1,16 @@
 import React from 'react'
-import { useUser } from '../../Contexts/user.jsx';
+import { useUser, useNotis } from '../../Contexts/user.jsx';
 import { useSocket } from '../../Contexts/socket.jsx';
 import {Link} from "react-router-dom"
 import { useMobile } from "../../Contexts/mobile.jsx"
+import { useEffect } from 'react';
+import { NotiProvider }from "../../Contexts/user.jsx"
+import { useState } from 'react';
 
 function Header() {
     const {socket} = useSocket();
     const {userState, token} = useUser();
+    const [notis, setNotis] = useState(0);
     const {widthS} = useMobile();
 
     const logout = () => {
@@ -20,13 +24,65 @@ function Header() {
         window.location.pathname='/'
     }
 
-    if(widthS === 'mobile') return <MobileHeader userState={userState} token={token} logout={logout} />
-    else if(widthS.includes('medium')) return <MediumHeader userState={userState} token={token} logout={logout} />
-    else return <LargeHeader userState={userState} token={token} logout={logout} />
+    const fetchNotis = () => {
+        if(token){
+            fetch('/api/verifyNewNotifications', {
+                method: 'GET',
+                headers:{
+                    'content-type': 'application/json',
+                    'auth-token': token
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                setNotis(data.newNotis);
+            });
+        }
+    }
+
+    useEffect(() => {
+        fetchNotis();
+    },[])
+
+    useEffect(() => {
+        if(typeof notis === 'number'){
+            socket.on('newNotification',() => {
+                setNotis(notis+1)
+            })
+        }
+    }, [notis])
+
+    if(widthS === 'mobile') return (
+        <MobileHeader
+            userState={userState}
+            token={token}
+            logout={logout}
+            notis={notis}
+            setNotis={setNotis}
+        />
+    )
+    else if(widthS.includes('medium')) return(
+        <MediumHeader
+            userState={userState}
+            token={token}
+            logout={logout}
+            notis={notis}
+            setNotis={setNotis}
+        />
+    )
+    else return (
+        <LargeHeader
+            userState={userState}
+            token={token}
+            logout={logout}
+            notis={notis}
+            setNotis={setNotis}
+        />
+    )
 
 }
 
-const LargeHeader = ({userState, theme, token, logout}) => {
+const LargeHeader = ({userState, token, logout, notis, setNotis}) => {
 
     return (
         <div id='header-pos' className={``}>
@@ -54,10 +110,10 @@ const LargeHeader = ({userState, theme, token, logout}) => {
                             <span className="material-icons notranslate gicon header-icon">mail</span>
                             Chats
                         </Link>
-                        <Link to='/notifications' id="notification-btn" className={`a-normalize header-btn `}>
+                        <Link to='/notifications' onClick={() => {setNotis(0)}} id="notification-btn" className={`a-normalize header-btn `}>
                             <span className={`material-icons notranslate gicon header-icon `}>notifications</span>
                             <div id="new-notification-div">
-                                {userState?.newNotis > 0 ? <span id="new-notification">{userState?.newNotis}</span>:''}
+                                {notis > 0 ? <span id="new-notification">{notis <= 9 ? notis : `9+`}</span>:''}
                             </div>
                             Notificaciones
                         </Link>
@@ -84,7 +140,8 @@ const LargeHeader = ({userState, theme, token, logout}) => {
 
 }
 
-const MediumHeader = ({userState, theme, token, logout}) => {
+const MediumHeader = ({userState, token, logout, notis, setNotis}) => {
+
     return (
         <div id='medium-header-pos' className={``}>
             <div id="header">
@@ -112,12 +169,12 @@ const MediumHeader = ({userState, theme, token, logout}) => {
                         <Link to='/chat' id="chat-btn" className={`a-normalize medium-header-btn `}>
                             <span className="material-icons notranslate gicon medium-header-icon">mail</span>
                         </Link>
-                        <Link to='/notifications' id="notification-btn" className={`a-normalize medium-header-btn `}>
+                        <Link to='/notifications' onClick={() => {setNotis(0)}} id="notification-btn" className={`a-normalize medium-header-btn `}>
                             <span className={`material-icons notranslate gicon medium-header-icon `}>
                                     notifications
                                 </span>
                                 <div id="new-notification-div">
-                                    {userState?.newNotis > 0 ? <span id="new-notification">{userState?.newNotis}</span>:''}
+                                    {notis > 0 ? <span id="new-notification">{notis <= 9 ? notis : `9+`}</span>:''}
                                 </div>
                         </Link>
                         <a  onClick={logout} id="logout-btn" className={`a-normalize medium-header-btn `}>
@@ -139,7 +196,8 @@ const MediumHeader = ({userState, theme, token, logout}) => {
     )
 }
 
-const MobileHeader = ({userState, theme, token, logout}) => {
+const MobileHeader = ({userState, token, notis, setNotis}) => {
+
     if(token){
         return(
             <>
@@ -154,12 +212,12 @@ const MobileHeader = ({userState, theme, token, logout}) => {
                         search
                     </span>
                 </Link>
-                <Link to='/notifications' id="noti-btn" className={`a-normalize mobile-header-btn `}>
+                <Link to='/notifications' onClick={() => {setNotis(0)}} id="noti-btn" className={`a-normalize mobile-header-btn `}>
                     <span className="material-icons notranslate gicon header-icon">
                         notifications
                     </span>
                     <div id="new-notification-div">
-                        {userState?.newNotis > 0 ? <span id="new-notification">{userState?.newNotis}</span>:''}
+                        {notis > 0 ? <span id="new-notification">{notis <= 9 ? notis : `9+`}</span>:''}
                     </div>
                 </Link>
                 <Link to='/chat' id="chat-btn" className={`a-normalize mobile-header-btn `}>
